@@ -14,9 +14,9 @@
                     </svg>
                 </button>
                 <a href="/" class="flex ms-2 md:me-24">
-                    <img src="{{ asset('images/app-icon.png') }}" class="h-8 me-3" alt="Asistencia sección 8 logo" />
+                    <img src="{{ asset('images/LOGO_SCCYC.png') }}" class="h-8 me-3" alt="Sistema Centros de Capacitación logo" />
                     <span
-                        class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">Asistencia Sección 8</span>
+                        class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">Sistema Centros de Capacitación</span>
                 </a>
             </div>
             <div class="flex justify-end">

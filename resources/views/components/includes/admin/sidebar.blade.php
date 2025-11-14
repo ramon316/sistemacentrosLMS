@@ -7,16 +7,34 @@ $links = [
     'active' => request()->routeIs('admin.dashboard'),
     ],
     [
-    'name' => 'Eventos',
-    'icon' => 'fa-solid fa-calendar-alt',
-    'href' => route('admin.events.index'),
-    'active' => request()->routeIs('admin.events.*'),
+    'name' => 'Cursos',
+    'icon' => 'fa-solid fa-book',
+    'href' => '#', // route('admin.courses.index') - Por implementar
+    'active' => request()->routeIs('admin.courses.*'),
     ],
     [
-    'name' => 'Usuarios',
-    'icon' => 'fa-solid fa-users',
-    'href' => route('admin.users.attendances'),
-    'active' => request()->routeIs('admin.users.*'),
+    'name' => 'Categorías',
+    'icon' => 'fa-solid fa-folder',
+    'href' => '#', // route('admin.categories.index') - Por implementar
+    'active' => request()->routeIs('admin.categories.*'),
+    ],
+    [
+    'name' => 'Estudiantes',
+    'icon' => 'fa-solid fa-user-graduate',
+    'href' => '#', // route('admin.students.index') - Por implementar
+    'active' => request()->routeIs('admin.students.*'),
+    ],
+    [
+    'name' => 'Inscripciones',
+    'icon' => 'fa-solid fa-clipboard-list',
+    'href' => '#', // route('admin.enrollments.index') - Por implementar
+    'active' => request()->routeIs('admin.enrollments.*'),
+    ],
+    [
+    'name' => 'Certificados',
+    'icon' => 'fa-solid fa-certificate',
+    'href' => '#', // route('admin.certificates.index') - Por implementar
+    'active' => request()->routeIs('admin.certificates.*'),
     ],
     /* [
     'header' => 'Administrar página',

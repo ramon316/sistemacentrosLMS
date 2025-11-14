@@ -6,12 +6,12 @@ $links = [
     'href' => route('dashboard'),
     'active' => request()->routeIs('dashboard'),
     ],
-    [
+    /* [
     'name' => 'Mis Asistencias',
     'icon' => 'fa-solid fa-calendar-check',
     'href' => route('user.my-attendances'),
     'active' => request()->routeIs('user.my-attendances'),
-    ],
+    ], */
     /* [
     'header' => 'Administrar página',
     ],

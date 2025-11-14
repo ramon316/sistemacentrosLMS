@@ -1,3 +1,3 @@
 <a href="/">
-    <img src="{{ asset('images/app-icon.png') }}" alt="{{ config('app.name', 'Laravel') }}" class="size-16 rounded-lg" />
+    <img src="{{ asset('images/LOGO_SCCYC.png') }}" alt="{{ config('app.name', 'Laravel') }}" class="h-20 w-auto" />
 </a>

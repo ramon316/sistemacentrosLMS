@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-QR Attendance API is a Laravel 12 application that manages event attendance through QR code scanning with geolocation verification. The system allows users to check in to events by scanning QR codes, validates their proximity to the event location, and tracks attendance records.
+Sistema Centros de Capacitación is a Laravel 12 Learning Management System (LMS) designed to manage professional training and development. The platform enables users to access courses, track learning progress, earn certifications, and manage their professional development journey. Built on a foundation adapted from an attendance tracking system, it maintains robust authentication and user management features.
 
 ## Tech Stack
 
@@ -28,26 +28,16 @@ The application has three distinct interfaces:
 
 ### Key Models & Relationships
 
-- **User**: Authenticatable with Sanctum tokens, optional employee_id linking
-- **Employee**: External employee registry (non-timestamped, matricula as primary key)
-- **Event**: QR-enabled attendance events with geolocation boundaries
-  - Auto-generates UUID-based QR codes on creation
-  - Has `isActive()` method checking: active flag, start_time, end_time
-  - Relationships: belongsTo User (creator), hasMany Attendances
-- **Attendance**: Pivot-like model tracking event check-ins with geolocation data
-  - Stores user coordinates, calculated distance, verification status
-  - Relationships: belongsTo Event, belongsTo User
+**Current Core Models:**
+- **User**: Authenticatable with Sanctum tokens
 
-### Employee Verification System
-
-Users register with an `employee_id` (matricula):
-- System checks if matricula exists in `employees` table
-- Status set to `active` if found, `pending_verification` if not
-- Auth flow validates against Employee model for verification
-
-### Geolocation Service
-
-`GeolocationService` handles distance calculations between user location and event location using the Haversine formula. Used in `AttendanceController::checkIn()` to verify users are within `allowed_radius` of events.
+**LMS Models (to be implemented):**
+- **Course**: Training courses with content, duration, and requirements
+- **Module**: Course content sections
+- **Enrollment**: Student course registrations and progress tracking
+- **Certificate**: Completion certificates for finished courses
+- **Assessment**: Quizzes and evaluations
+- **Progress**: Learning progress tracking
 
 ### API Authentication Flow
 
@@ -170,24 +160,24 @@ Sanctum tokens expire after 2 hours. Frontend clients should:
 
 ## Key API Endpoints
 
-### Public Routes
-- `POST /api/register` - User registration with employee_id
+### Public Routes (Authentication)
+- `POST /api/register` - User registration (name, email, password)
 - `POST /api/login` - Authentication (returns 2hr token)
-- `POST /api/validate-matricula` - Check if employee matricula exists
-- `GET /api/events/qr/{qrCode}` - Get event details by QR code
 
 ### Protected Routes (Sanctum)
+**User & Auth:**
 - `POST /api/logout` - Invalidate current token
 - `GET /api/profile` - Get authenticated user
 - `GET /api/check-status` - Rotate token
-- `GET /api/events` - List events
-- `GET /api/events/{event}` - Get single event details
-- `POST /api/events` - Create event
-- `DELETE /api/events/{event}` - Delete event
-- `POST /api/attendances` - Check in to event (requires qr_code, user_latitude, user_longitude)
-- `GET /api/attendances/my` - User's attendance history
-- `GET /api/attendances/my/stats` - User attendance statistics
-- `GET /api/attendances/event/{event}` - Event attendances (admin only)
+
+**LMS Routes (to be implemented):**
+- `GET /api/courses` - List available courses
+- `GET /api/courses/{course}` - Get course details
+- `POST /api/enrollments` - Enroll in a course
+- `GET /api/my-courses` - User's enrolled courses
+- `GET /api/courses/{course}/progress` - Course progress
+- `POST /api/courses/{course}/complete` - Mark course as completed
+- `GET /api/certificates` - User's certificates
 
 ## Common Development Patterns
 
@@ -210,11 +200,12 @@ Sanctum tokens expire after 2 hours. Frontend clients should:
 3. Routes are automatically protected by `['web', 'auth']` middleware (configured in `bootstrap/app.php`)
 4. Check user permissions with `$user->isAdmin()` method if needed
 
-### Working with Geolocation
-1. Inject `GeolocationService` in controller constructor
-2. Use `calculateDistance()` method with event and user coordinates
-3. Compare result against event's `allowed_radius` property
-4. Store calculated distance in attendance record
+### Working with LMS Features (to be implemented)
+1. Course Management: Create models and migrations for courses, modules, and content
+2. Enrollment System: Track user course registrations and progress
+3. Assessment Engine: Build quiz/exam functionality with scoring
+4. Certificate Generation: Create PDF certificates upon course completion
+5. Progress Tracking: Monitor and report user learning progress
 
 ## Testing Notes
 
@@ -222,7 +213,7 @@ Sanctum tokens expire after 2 hours. Frontend clients should:
 - Jetstream includes feature tests for auth flows (registration, login, password reset, 2FA, profile management)
 - When writing new tests, use existing Jetstream tests as patterns
 - API tests should test both authenticated and unauthenticated scenarios
-- Test geolocation logic with various distance scenarios (within/outside radius)
+- LMS feature tests should cover: course enrollment, progress tracking, certificate generation, assessments
 
 ## Additional Notes
 
@@ -232,7 +223,8 @@ Sanctum tokens expire after 2 hours. Frontend clients should:
 - Run queue worker with `php artisan queue:listen --tries=1` or use `composer dev`
 
 ### Application Configuration
-- App name: "Sección8" (configurable in `.env`)
+- App name: "Sistema Centros LMS" (configurable in `.env` as `APP_NAME`)
 - Default locale: Spanish (`es`)
 - Session driver: `database` (2 hours lifetime)
 - Cache driver: `database`
+- Primary logo: `public/images/LOGO_SCCYC.png`

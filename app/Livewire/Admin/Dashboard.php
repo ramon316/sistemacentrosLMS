@@ -2,8 +2,9 @@
 
 namespace App\Livewire\Admin;
 
-use App\Models\Attendance;
-use App\Models\Event;
+use App\Models\Certificate;
+use App\Models\Course;
+use App\Models\Enrollment;
 use App\Models\User;
 use Carbon\Carbon;
 use Livewire\Component;
@@ -12,41 +13,71 @@ class Dashboard extends Component
 {
     public function render()
     {
-        // Métricas Globales del Sistema
-        $totalEvents = Event::count();
-        $totalUsers = User::count();
-        $totalAttendances = Attendance::count();
+        // Métricas Globales del Sistema LMS
+        $totalCourses = Course::count();
+        $publishedCourses = Course::where('status', 'published')->count();
+        $totalStudents = User::where('role', 'user')->count();
+        $totalEnrollments = Enrollment::count();
+        $totalCertificates = Certificate::count();
 
-        // Eventos activos ahora (dentro del rango de fechas y activos)
-        $activeEventsNow = Event::where('active', true)
-            ->where('start_time', '<=', now())
-            ->where('end_time', '>=', now())
+        // Cursos publicados recientemente (últimos 30 días)
+        $recentlyPublishedCourses = Course::where('status', 'published')
+            ->where('published_at', '>=', now()->subDays(30))
             ->count();
 
-        // Eventos próximos (activos y que inician hoy o en los próximos 7 días)
-        $upcomingEvents = Event::where('active', true)
-            ->where('start_time', '>', now())
-            ->where('start_time', '<=', now()->addDays(7))
+        // Estudiantes activos (con inscripciones en progreso)
+        $activeStudents = Enrollment::where('status', 'in_progress')
+            ->distinct('user_id')
+            ->count('user_id');
+
+        // Cursos completados este mes
+        $completedThisMonth = Enrollment::where('status', 'completed')
+            ->whereMonth('completed_at', now()->month)
+            ->whereYear('completed_at', now()->year)
             ->count();
 
-        // Actividad reciente (últimas 5 asistencias)
-        $recentAttendances = Attendance::with(['user', 'event'])
-            ->latest('checked_in_at')
+        // Nuevos estudiantes esta semana
+        $newStudentsThisWeek = User::where('role', 'user')
+            ->where('created_at', '>=', now()->startOfWeek())
+            ->count();
+
+        // Cursos más populares (top 5 por inscripciones)
+        $popularCourses = Course::withCount('enrollments')
+            ->where('status', 'published')
+            ->orderBy('enrollments_count', 'desc')
             ->limit(5)
             ->get();
 
-        // Nuevos usuarios esta semana
-        $newUsersThisWeek = User::where('created_at', '>=', now()->startOfWeek())
+        // Inscripciones recientes (últimas 10)
+        $recentEnrollments = Enrollment::with(['user', 'course'])
+            ->latest('enrolled_at')
+            ->limit(10)
+            ->get();
+
+        // Certificados emitidos recientemente (últimos 7 días)
+        $recentCertificates = Certificate::where('issued_at', '>=', now()->subDays(7))
             ->count();
 
+        // Tasa de finalización general
+        $completedEnrollments = Enrollment::where('status', 'completed')->count();
+        $completionRate = $totalEnrollments > 0
+            ? round(($completedEnrollments / $totalEnrollments) * 100, 2)
+            : 0;
+
         return view('livewire.admin.dashboard', [
-            'totalEvents' => $totalEvents,
-            'totalUsers' => $totalUsers,
-            'totalAttendances' => $totalAttendances,
-            'activeEventsNow' => $activeEventsNow,
-            'upcomingEvents' => $upcomingEvents,
-            'recentAttendances' => $recentAttendances,
-            'newUsersThisWeek' => $newUsersThisWeek,
+            'totalCourses' => $totalCourses,
+            'publishedCourses' => $publishedCourses,
+            'totalStudents' => $totalStudents,
+            'totalEnrollments' => $totalEnrollments,
+            'totalCertificates' => $totalCertificates,
+            'recentlyPublishedCourses' => $recentlyPublishedCourses,
+            'activeStudents' => $activeStudents,
+            'completedThisMonth' => $completedThisMonth,
+            'newStudentsThisWeek' => $newStudentsThisWeek,
+            'popularCourses' => $popularCourses,
+            'recentEnrollments' => $recentEnrollments,
+            'recentCertificates' => $recentCertificates,
+            'completionRate' => $completionRate,
         ]);
     }
 }

@@ -21,7 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         // Registrar middlewares con alias
         $middleware->alias([
-            'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
+            'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'redirect.if.admin' => \App\Http\Middleware\RedirectIfAdmin::class,
         ]);
     })

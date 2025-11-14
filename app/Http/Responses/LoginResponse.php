@@ -17,7 +17,7 @@ class LoginResponse implements LoginResponseContract
         // Determinar la ruta de redirección según el rol del usuario
         $redirectTo = $request->user()->isAdmin()
             ? '/admin'
-            : '/dashboard';
+            : '/';
 
         return $request->wantsJson()
             ? response()->json(['two_factor' => false])

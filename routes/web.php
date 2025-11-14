@@ -20,7 +20,11 @@ Route::middleware([
         return view('user.dashboard');
     })->name('dashboard');
 
-    Route::get('/my-attendances', function () {
-        return view('user.my-attendances');
-    })->name('user.my-attendances');
+    /* LMS routes - to be implemented */
+    // Route::get('/my-courses', function () {
+    //     return view('user.my-courses');
+    // })->name('user.my-courses');
+    // Route::get('/courses/{course}', function () {
+    //     return view('user.course-detail');
+    // })->name('user.course-detail');
 });

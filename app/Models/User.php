@@ -30,7 +30,6 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
-        'employee_id',
     ];
 
     /**
@@ -75,29 +74,5 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
-    }
-
-    /**
-     * Get the employee record associated with this user.
-     */
-    public function employee()
-    {
-        return $this->belongsTo(Employee::class, 'employee_id', 'matricula');
-    }
-
-    /**
-     * Get the attendances for this user.
-     */
-    public function attendances()
-    {
-        return $this->hasMany(Attendance::class);
-    }
-
-    /**
-     * Get the pending attendances for this user's employee_id.
-     */
-    public function pendingAttendances()
-    {
-        return $this->hasMany(PendingAttendance::class, 'employee_matricula', 'employee_id');
     }
 }

@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('employee_id', 12)->unique()->after('email');
+            $table->foreignId('center_id')->nullable()->after('profile_photo_path')->constrained('centers')->onDelete('set null');
+            $table->integer('total_points')->default(0)->after('center_id');
+            $table->integer('current_level')->default(1)->after('total_points');
         });
     }
 
@@ -22,8 +24,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropUnique(['employee_id']);
-            $table->dropColumn('employee_id');
+            $table->dropForeign(['center_id']);
+            $table->dropColumn(['center_id', 'total_points', 'current_level']);
         });
     }
 };
