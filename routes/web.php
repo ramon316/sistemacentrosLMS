@@ -19,12 +19,4 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return view('user.dashboard');
     })->name('dashboard');
-
-    /* LMS routes - to be implemented */
-    // Route::get('/my-courses', function () {
-    //     return view('user.my-courses');
-    // })->name('user.my-courses');
-    // Route::get('/courses/{course}', function () {
-    //     return view('user.course-detail');
-    // })->name('user.course-detail');
 });

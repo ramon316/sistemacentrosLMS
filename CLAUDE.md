@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Sistema Centros de Capacitación is a Laravel 12 Learning Management System (LMS) designed to manage professional training and development. The platform enables users to access courses, track learning progress, earn certifications, and manage their professional development journey. Built on a foundation adapted from an attendance tracking system, it maintains robust authentication and user management features.
+BeautyApp is a clean Laravel 12 application with authentication and user management. The platform provides a foundation with Laravel Jetstream authentication, administrative panels, and API authentication using Sanctum tokens. It features a triple interface system (Web, Admin, API) ready for building custom features.
 
 ## Tech Stack
 
@@ -22,22 +22,14 @@ Sistema Centros de Capacitación is a Laravel 12 Learning Management System (LMS
 
 The application has three distinct interfaces:
 
-1. **Web Interface** (`routes/web.php`): Jetstream-powered dashboard with Livewire components
+1. **Web Interface** (`routes/web.php`): Jetstream-powered user dashboard with Livewire components
 2. **Admin Interface** (`routes/admin.php`): Mounted at `/admin` prefix with `['web', 'auth']` middleware (configured in `bootstrap/app.php`), uses custom AdminLayout component
 3. **API Interface** (`routes/api.php`): RESTful API with Sanctum authentication for mobile/external clients
 
-### Key Models & Relationships
+### Key Models
 
-**Current Core Models:**
-- **User**: Authenticatable with Sanctum tokens
-
-**LMS Models (to be implemented):**
-- **Course**: Training courses with content, duration, and requirements
-- **Module**: Course content sections
-- **Enrollment**: Student course registrations and progress tracking
-- **Certificate**: Completion certificates for finished courses
-- **Assessment**: Quizzes and evaluations
-- **Progress**: Learning progress tracking
+**Core Models:**
+- **User**: Authenticatable model with Sanctum tokens, supports roles (user, admin, superadmin)
 
 ### API Authentication Flow
 
@@ -158,26 +150,26 @@ Sanctum tokens expire after 2 hours. Frontend clients should:
 2. Use `/api/check-status` endpoint to rotate tokens
 3. Store new token and retry failed request
 
-## Key API Endpoints
+## Key Routes
 
-### Public Routes (Authentication)
+### Web Routes (`routes/web.php`)
+- `GET /` - Welcome page (public)
+- `GET /privacy` - Privacy policy page (public)
+- `GET /dashboard` - User dashboard (auth required)
+
+### API Routes (`routes/api.php`)
+**Public Routes:**
 - `POST /api/register` - User registration (name, email, password)
 - `POST /api/login` - Authentication (returns 2hr token)
+- `GET /api/test` - API health check
 
-### Protected Routes (Sanctum)
-**User & Auth:**
+**Protected Routes (Sanctum):**
 - `POST /api/logout` - Invalidate current token
 - `GET /api/profile` - Get authenticated user
 - `GET /api/check-status` - Rotate token
 
-**LMS Routes (to be implemented):**
-- `GET /api/courses` - List available courses
-- `GET /api/courses/{course}` - Get course details
-- `POST /api/enrollments` - Enroll in a course
-- `GET /api/my-courses` - User's enrolled courses
-- `GET /api/courses/{course}/progress` - Course progress
-- `POST /api/courses/{course}/complete` - Mark course as completed
-- `GET /api/certificates` - User's certificates
+### Admin Routes (`routes/admin.php`)
+- `GET /admin` - Admin dashboard (auth required, auto-protected by middleware)
 
 ## Common Development Patterns
 
@@ -196,16 +188,17 @@ Sanctum tokens expire after 2 hours. Frontend clients should:
 
 ### Adding Admin Features
 1. Add route in `routes/admin.php`
-2. Use AdminLayout component for views (`resources/views/components/admin-layout.blade.php`)
-3. Routes are automatically protected by `['web', 'auth']` middleware (configured in `bootstrap/app.php`)
-4. Check user permissions with `$user->isAdmin()` method if needed
+2. Create Livewire component in `app/Livewire/Admin/`
+3. Create view in `resources/views/livewire/admin/`
+4. Use AdminLayout component for consistent admin UI
+5. Routes are automatically protected by `['web', 'auth']` middleware
+6. Check user permissions with `$user->role` if needed (user, admin, superadmin)
 
-### Working with LMS Features (to be implemented)
-1. Course Management: Create models and migrations for courses, modules, and content
-2. Enrollment System: Track user course registrations and progress
-3. Assessment Engine: Build quiz/exam functionality with scoring
-4. Certificate Generation: Create PDF certificates upon course completion
-5. Progress Tracking: Monitor and report user learning progress
+### Creating Livewire Components
+1. Generate component: `php artisan make:livewire Admin/ComponentName`
+2. Component class goes to `app/Livewire/Admin/ComponentName.php`
+3. View goes to `resources/views/livewire/admin/component-name.blade.php`
+4. Use WireUI components for consistent UI (x-wire-card, x-wire-button, x-wire-badge, etc.)
 
 ## Testing Notes
 
@@ -213,7 +206,6 @@ Sanctum tokens expire after 2 hours. Frontend clients should:
 - Jetstream includes feature tests for auth flows (registration, login, password reset, 2FA, profile management)
 - When writing new tests, use existing Jetstream tests as patterns
 - API tests should test both authenticated and unauthenticated scenarios
-- LMS feature tests should cover: course enrollment, progress tracking, certificate generation, assessments
 
 ## Additional Notes
 
@@ -223,8 +215,17 @@ Sanctum tokens expire after 2 hours. Frontend clients should:
 - Run queue worker with `php artisan queue:listen --tries=1` or use `composer dev`
 
 ### Application Configuration
-- App name: "Sistema Centros LMS" (configurable in `.env` as `APP_NAME`)
+- App name: "BeautyApp" (configurable in `.env` as `APP_NAME`)
 - Default locale: Spanish (`es`)
 - Session driver: `database` (2 hours lifetime)
 - Cache driver: `database`
 - Primary logo: `public/images/LOGO_SCCYC.png`
+
+### User Roles
+- **user**: Regular users with access to user dashboard
+- **admin**: Administrators with access to admin panel
+- **superadmin**: Super administrators with full system access
+
+### Middleware
+- `redirect.if.admin`: Redirects admins from user routes to admin panel (configured in `app/Http/Middleware/RedirectIfAdmin.php`)
+- All admin routes are automatically protected by `['web', 'auth']` middleware via `bootstrap/app.php` configuration

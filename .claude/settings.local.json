@@ -6,7 +6,10 @@
       "Bash(php artisan migrate:status:*)",
       "Bash(php artisan:*)",
       "Bash(mysql:*)",
-      "Bash(composer dump-autoload:*)"
+      "Bash(composer dump-autoload:*)",
+      "Bash(composer install:*)",
+      "Bash(rm:*)",
+      "Bash(del:*)"
     ],
     "deny": [],
     "ask": []
